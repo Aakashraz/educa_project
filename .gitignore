@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+.env
+local_settings.py
+
+# Docker
+.dockerignore
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env.local
+.env.production
+
+# Conda (if someone clones and uses it)
+env/
+venv/
+ENV/
+conda-env/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Migrations (optional - some people commit, some don't)
+# */migrations/*.py
+# !*/migrations/__init__.py

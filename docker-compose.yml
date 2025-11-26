@@ -1,0 +1,28 @@
+version: '3.8'
+
+
+services:
+  backend:
+    build: .
+    # Build image from Dockerfile in current directory (.)
+
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+      # Override CMD from Dockerfile
+      # sh -c allows running multiple commands as string
+
+    volumes:
+      - .:/app
+    # Mount current directory -> /app in container
+    # Changes on your computer instantly appear in container!
+    # Format: local_path:container_path
+
+    ports:
+      - "8000:8000"
+    # Map ports: your_computer:container
+    # localhost:8000 on your PC -> port 8000 in container
+
+    env_file:
+      - .env  # Loads variables from .env files
+    # Set environment variables inside the container
