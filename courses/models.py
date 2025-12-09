@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from .fields import OrderField
 
 
 class Subject(models.Model):
@@ -44,9 +45,15 @@ class Module(models.Model):
     )
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    order = OrderField(blank=True, for_fields=['course'])
+    # by setting for_fields=['course'], this means that the order for a new module will be
+    # assigned by adding 1 to the last module of the same 'Course' object.
+
+    class Meta:
+        ordering = ['order']
 
     def __str__(self):
-        return self.title
+        return f'{self.order}. {self.title}'
 
 
 class Content(models.Model):
@@ -64,7 +71,11 @@ class Content(models.Model):
     )
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
+    order = OrderField(blank=True, for_fields=['module'])
+    # This time, you specify that the order is calculated w.r.t. the module field.
 
+    class Meta:
+        ordering = ['order']
 
 # Abstract Model
 class ItemBase(models.Model):
