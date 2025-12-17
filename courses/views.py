@@ -19,7 +19,7 @@ class OwnerEditMixin:
         return super().form_valid(form)
 
 
-class OwnerCourseMixin(OwnerMixin, LoginRequiredMixin, PermissionRequiredMixin):
+class OwnerCourseMixin(LoginRequiredMixin, PermissionRequiredMixin, OwnerMixin):
     model = Course
     fields = ['subject', 'title', 'slug', 'overview']
     success_url = reverse_lazy('manage_course_list')
