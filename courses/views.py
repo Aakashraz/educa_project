@@ -2,11 +2,13 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import render
 from django.views.generic.list import ListView
-from .models import Course
+from .models import Course, Module, Content
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.base import TemplateResponseMixin, View
 from .forms import ModuleFormSet
+from django.apps import apps
+from django.forms.models import modelform_factory
 
 
 class OwnerMixin:
@@ -99,3 +101,40 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
     #   changes made, such as adding, updating, or making modules for deletion, are applied to the
     #   database. Then, you redirect users to the manage_course_list URL. If the formset is
     #   not valid, you render the template to display any errors instead.
+
+
+class ContentCreateUpdateView(TemplateResponseMixin, View):
+    module = None
+    model = None
+    obj = None
+    template_name = 'courses/manage/content/form.html'
+
+    def get_model(self, model_name):
+        if model_name in ['text', 'video', 'image', 'file']:
+            return apps.get_model(
+                app_label='courses', model_name=model_name
+            )
+        return None
+
+    def get_form(self, model, *args, **kwargs):
+        Form = modelform_factory(
+            model, exclude=['owner', 'order', 'created', 'updated']
+        )
+        return Form(*args, **kwargs)
+
+    def dispatch(self, request, module_id, model_name, id=None):
+        self.module = get_object_or_404(
+            Module, id=module_id, course__owner=request.user
+        )
+        self.model= self.get_model(model_name)
+        if id:
+            self.obj = get_object_or_404(
+                slef.model, id=id, owner=request.user
+            )
+        return super().dispatch(request, module_id, model_name, id)
+
+    def get(self, request, module_id, model_name, id=None):
+        form = self.get_form(self.model, instance=self.obj)
+        return self.render_to_response(
+            {'form': form, 'object': self.obj}
+        )
