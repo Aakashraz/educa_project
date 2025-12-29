@@ -116,6 +116,10 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
             )
         return None
 
+        # modelform_factory - dynamically creates a ModelForm class at runtime from a specified Django model,
+        # saving you from manually defining a forms.ModelForm in forms.py for simple cases, letting you configure
+        # fields, widgets, labels, and validation rules directly, and it's the foundation for more
+        # tools like modelformset_factory.
     def get_form(self, model, *args, **kwargs):
         Form = modelform_factory(
             model, exclude=['owner', 'order', 'created', 'updated']
@@ -149,8 +153,21 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
             obj.save()
             if not id:
                 # new content
-                Content.objects.create(module=self.module, item=obj)
+                Content.objects.create(
+                    module=self.module,     # Which module this content belongs to
+                    item=obj    # The actual content object (Text/Video/Image/File)
+                )
             return redirect('module_content_list', self.module.id)
+        # Always redirect after successful POST - Prevents duplicate submissions
+
+        # This line never executed when form is valid.
         return self.render_to_response(
             {'form':form, 'object':self.obj}
         )
+        # If execution reaches here directly if there are validation errors.
+        # Result:
+        # - Nothing is saved to database
+        # - Form re-displayed with:
+            # - User's input preserved
+            # - Error messages shown
+            # - User can fix and re-submit
