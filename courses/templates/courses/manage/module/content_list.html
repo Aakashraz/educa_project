@@ -2,18 +2,26 @@
 
 {% block title %}
     Module {{ module.order|add:1 }}: {{ module.title }}
+{#    |add:1 - Adds 1 to the module.order, Why: Modules are stored with 0-based indexing in the database (0,1,2,3...) #}
+{#    but humans prefer 1-based counting (1,2,3,4...) #}
 {% endblock %}
 
 {% block content %}
 {% with course=module.course %}
+{#    Creates a temporary variable 'course' that holds module.course for the block's scope  #}
 
     <h1>Course "{{ course.title }}"</h1>
     <div class="contents">
         <h3>Modules</h3>
         <ul id="modules">
             {% for m in course.modules.all %}
+                {#  data-id: Stores the module's ID as a custom HTML attribute on the <li> element.  #}
+                {#  Why: JavaScript can later access this ID for drag-and-drop reordering or AJAX operations without needing to parse the URL.#}
                 <li data-id="{{ m.id }}" {% if m == module %}
                     class="selected"{% endif %}>
+                    <!-- m=each module in the loop (Module1, Module2, Module3,...)
+                        module = the currently viewed module (passed from the view's context    -->
+{#                  {% if m == module %} = "Is this looped module the same as the currently viewed one?"#}
                         <a href="{% url 'module_content_list' m.id %}">
                             <span>
                                 Module <span class="order">{{ m.order|add1 }}</span>
