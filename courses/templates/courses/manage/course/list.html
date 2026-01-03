@@ -5,6 +5,19 @@
 {% block content %}
     <h1>My courses</h1>
     <div class="module">
+         <!-- The object_list is automatically created by Django's ListView. -->
+        {#        # When ManagerCourseListView.as_view() is called:#}
+        {##}
+        {#        # 1. ListView calls get_queryset()#}
+        {#        queryset = Course.objects.filter(owner=request.user)#}
+        {##}
+        {#        # 2. ListView passes it to template as 'object_list'#}
+        {#        context = {#}
+        {#        'object_list': queryset,#}
+        {#        'course_list': queryset,  # Also this#}
+        {#        }#}
+        {##}
+        {#        # 3. Template receives both variables#}
         {% for course in object_list %}
             <div class="course-info">
                 <h3>{{ course.title }}</h3>
@@ -12,6 +25,12 @@
                     <a href="{% url 'course_edit' course.id %}">Edit</a>
                     <a href="{% url 'course_delete' course.id %}">Delete</a>
                     <a href="{% url 'course_module_update' course.id %}">Edit modules</a>
+                    {% if course.modules.count > 0 %}
+
+                        <a href="{% url 'module_content_list' course.modules.first.id %}">
+                            Manage contents
+                        </a>
+                    {% endif %}
                 </p>
             </div>
         {% empty %}
