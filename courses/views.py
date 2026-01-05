@@ -9,6 +9,7 @@ from django.views.generic.base import TemplateResponseMixin, View
 from .forms import ModuleFormSet
 from django.apps import apps
 from django.forms.models import modelform_factory
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 
 
 class OwnerMixin:
@@ -145,7 +146,7 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
 
     def post(self, request, module_id, model_name, id=None):
         form = self.get_form(
-            self.model, instance=self.obj, data=request.POST, files=request.FIlES
+            self.model, instance=self.obj, data=request.POST, files=request.FILES
         )
         if form.is_valid():
             obj = form.save(commit=False)
@@ -192,3 +193,27 @@ class ModuleContentListView(TemplateResponseMixin, View):
             Module, id=module_id, course__owner=request.user
         )
         return self.render_to_response({'module': module})
+
+
+# Re-ordering modules and their contents
+# JsonRequestResponseMixin: A mixin that attempts to parse the request as JSON. If the request is properly formatted,
+# the JSON is saved to self.request__json as a Python object. request__json will be 'None' for unparseable requests.
+class ModuleOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request__json.items():
+            Module.objects.filter(
+                id=id, course__owner=request.user
+            ).update(order=order)
+        return self.render_json_response({'saved':'OK'})
+# Key Takeaway:
+# The reorder view only updates numbers.
+# The display views sort by those numbers, usually via Meta.ordering of the 'Module' model class.
+
+
+class ContentOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
+    def post(self, request):
+        for id, order in self.request__json.items():
+            Content.objects.filter(
+                id=id, module__course__owner=request.user
+            ).update(order=order)
+        return self.render_json_response({'saved':'OK'})
