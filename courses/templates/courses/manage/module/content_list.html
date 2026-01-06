@@ -89,3 +89,26 @@
     </div>
 {% endwith %}
 {% endblock %}
+
+{% block include_js %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
+{% endblock %}
+
+{% block domready %}
+
+    var options = {
+        method: 'POST',
+        mode: 'same-origin'
+    }
+    const moduleOrderUrl = '{% url "module_order" %}';
+
+{#  Finds the element: '#modules', targets-- <ul id="modules">    #}
+{#  Makes it sortable: Users can drag <li> elements to reorder them    #}
+    sortable('#modules', {
+    {# Placeholder has the same height as the dragged item, Space is clearly visible, Dragging feels smooth and predictable.   #}
+        forcePlaceholderSize: true,
+        placeholderClass: 'placeholder'
+    {# placeholderClass lets you style that position using CSS.   #}
+    });
+{% endblock %}
