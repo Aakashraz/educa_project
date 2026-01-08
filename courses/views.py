@@ -197,10 +197,10 @@ class ModuleContentListView(TemplateResponseMixin, View):
 
 # Re-ordering modules and their contents
 # JsonRequestResponseMixin: A mixin that attempts to parse the request as JSON. If the request is properly formatted,
-# the JSON is saved to self.request__json as a Python object. request__json will be 'None' for unparseable requests.
+# the JSON is saved to self.request_json as a Python object. request_json will be 'None' for unparseable requests.
 class ModuleOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
     def post(self, request):
-        for id, order in self.request__json.items():
+        for id, order in self.request_json.items():
             Module.objects.filter(
                 id=id, course__owner=request.user
             ).update(order=order)
@@ -212,7 +212,7 @@ class ModuleOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
 
 class ContentOrderView(CsrfExemptMixin, JsonRequestResponseMixin, View):
     def post(self, request):
-        for id, order in self.request__json.items():
+        for id, order in self.request_json.items():
             Content.objects.filter(
                 id=id, module__course__owner=request.user
             ).update(order=order)
