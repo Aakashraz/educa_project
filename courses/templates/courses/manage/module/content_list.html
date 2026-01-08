@@ -96,19 +96,103 @@
 {% endblock %}
 
 {% block domready %}
+    // Test if sortable is loaded
+    console.log('Sortable available:', typeof sortable);    // Should be function
+    // Test if element exists
+    console.log('Modules element:', document.querySelector('#modules'));
+
+{#    // Get CSRF token from cookies#}
+{#    function getCookie(name) {#}
+{#        let cookieValue = null;#}
+{#        if (document.cookie && document.cookie !== '') {#}
+{#            const cookies = document.cookie.split(';');#}
+{#            for (let i = 0; i < cookies.length; i++) {#}
+{#                const cookie = cookies[i].trim();#}
+{#                if (cookie.substring(0, name.length + 1) === (name + '=')) {#}
+{#                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));#}
+{#                    break;#}
+{#                }#}
+{#            }#}
+{#        }#}
+{#        return cookieValue;#}
+{#    }#}
+{##}
+{#    const csrftoken = getCookie('csrftoken');#}
 
     var options = {
         method: 'POST',
-        mode: 'same-origin'
+        mode: 'same-origin',
+{#        headers: {#}
+{#            'X-CSRFToken': csrftoken,#}
+{#            'Content-Type': 'application/json',#}
+{#        }#}
     }
+
+    // To sort module order -------------------------
     const moduleOrderUrl = '{% url "module_order" %}';
 
-{#  Finds the element: '#modules', targets-- <ul id="modules">    #}
-{#  Makes it sortable: Users can drag <li> elements to reorder them    #}
-    sortable('#modules', {
+    {#  Finds the element: '#modules', targets-- <ul id="modules">    #}
+    {#  Makes it sortable: Users can drag <li> elements to reorder them    #}
+    var sortableList =  sortable('#modules', {
     {# Placeholder has the same height as the dragged item, Space is clearly visible, Dragging feels smooth and predictable.   #}
         forcePlaceholderSize: true,
         placeholderClass: 'placeholder'
     {# placeholderClass lets you style that position using CSS.   #}
     });
+
+    console.log('Sortable initialized:', sortableList); // Should show an array
+
+    // Attach event listener properly
+    sortableList[0].addEventListener('sortupdate', function(e) {
+        console.log('Sort update triggered!!!');    // Debug message
+
+        modulesOrder = {};
+        var modules = document.querySelectorAll('#modules li');
+
+        modules.forEach(function (module, index) {
+            // update module index
+            modulesOrder[module.dataset.id] = index;
+            // update index in HTML element
+            module.querySelector('.order').innerHTML = index + 1;
+        });
+
+        // add new order to HTTP request options
+        options['body'] = JSON.stringify(modulesOrder);
+
+        console.log('Sending order:', modulesOrder);    // Debug message
+
+        // send HTTP request
+        fetch(moduleOrderUrl, options)
+            .then(response => response.json())
+            .then(data => console.log('Server response:', data))
+            .catch(error => console.error('Error:', error));
+    });
+
+    // To sort module contents -------------------------
+    const contentOrderUrl = '{% url "content_order" %}';
+
+    var sortableContentList = sortable('#module-contents', {
+        forcePlaceholderSize: true,
+        placeholderClass: 'placeholder'
+    });
+
+    sortableContentList[0].addEventListener('sortupdate', function(e) {
+        contentOrder = {};
+        var contents = document.querySelectorAll('#module-contents div');
+
+        contents.forEach(function (content, index) {
+            // update content index
+            contentOrder[content.dataset.id] = index;
+        });
+
+        // add new order to the HTTP request options.
+        options['body'] = JSON.stringify(contentOrder);
+
+        // send HTTP request
+        fetch(contentOrderUrl, options)
+            .then(response => response.json())
+            .then(data => console.log('Server response for contents:', data))
+            .catch(error => console.error('Error:', error));
+    });
+
 {% endblock %}
