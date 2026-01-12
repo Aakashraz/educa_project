@@ -225,20 +225,25 @@ class CourseListView(TemplateResponseMixin, View):
     model = Course
     template_name = 'courses/course/list.html'
     def get(self, request, subject=None):
+        # ALWAYS get all subjects with counts (for sidebar)
         subjects = Subject.objects.annotate(
             total_courses=Count('courses')
         )
+        # ALWAYS start with all courses
         courses = Course.objects.annotate(
             total_modules=Count('modules')
         )
+        # IF subject provided, filter down
         if subject:
             subject = get_object_or_404(Subject, slug=subject)
-            courses = courses.filter(subject=subject)
+            courses = courses.filter(subject=subject)   # <- Narrow down!
+        # ELSE courses stays as "all courses"
+
         return self.render_to_response(
             {
-            'subjects': subjects,
-            'subject': subject,
-            'courses': courses
+            'subjects': subjects,   # Always show all subjects (for navigation)
+            'subject': subject,     # Currently selected subject (or None)
+            'courses': courses      # All courses OR filtered courses
             }
         )
 
