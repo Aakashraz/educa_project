@@ -1,7 +1,10 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import CourseEnrollForm
+
 
 
 class StudentRegistrationView(CreateView):
@@ -36,3 +39,10 @@ class StudentRegistrationView(CreateView):
         # Step 5: Return the redirect
         return result
         # Browser redirects to: ('student_course_list')
+
+
+
+class StudentEnrollCourseView(LoginRequiredMixin, FormView):
+    course = None
+    form_class = CourseEnrollForm
+
