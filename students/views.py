@@ -43,6 +43,25 @@ class StudentRegistrationView(CreateView):
 
 
 class StudentEnrollCourseView(LoginRequiredMixin, FormView):
+    # Class attribute: stores current course being enrolled in
     course = None
+    # Tells FormView which form class to use
     form_class = CourseEnrollForm
+
+    def form_valid(self, form):
+        # 1. Extract course from hidden form field
+        self.course = form.cleaned_data['course']
+        # 2. Add current user to course's students
+        #    Many-to-Many relationship: course.students.add(user) -- .add() came from m2m manager
+        self.course.students.add(self.request.user)
+        # 3. Let parent handle redirect
+        #   Parent calls get_success_url() which needs self.course
+        #   Must be called AFTER we set self.course!
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Called by super().form_valid()
+        # Return URL to redirect to after successful enrollment
+        # Uses self.course that we set in form_valid()
+        return reverse_lazy('student_course_list', args=[self.course.id])
 
