@@ -12,6 +12,7 @@ from django.apps import apps
 from django.forms.models import modelform_factory
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.db.models import Count
+from students.forms import CourseEnrollForm
 
 
 class OwnerMixin:
@@ -251,3 +252,12 @@ class CourseListView(TemplateResponseMixin, View):
 class CourseDetailView(DetailView):
     model = Course
     template_name = 'courses/course/detail.html'
+
+    def context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['enroll_form'] = CourseEnrollForm(
+            initial={'course':self.object}  # Pre-fill the hidden course field with the current course.
+        )
+        return context
+
+

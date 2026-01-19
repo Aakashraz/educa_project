@@ -14,7 +14,7 @@ class CourseEnrollForm(forms.Form):
 
     def __init__(self, *args, **kwargs):    # <- Why override?
         # - To populate the choices only when the form is created, not when the module loads.
-        super(self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # NOW set the queryset (when form is actually being used)
         self.fields['course'].queryset = Course.objects.all()
 

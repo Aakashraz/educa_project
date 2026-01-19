@@ -63,5 +63,5 @@ class StudentEnrollCourseView(LoginRequiredMixin, FormView):
         # Called by super().form_valid()
         # Return URL to redirect to after successful enrollment
         # Uses self.course that we set in form_valid()
-        return reverse_lazy('student_course_list', args=[self.course.id])
+        return reverse_lazy('student_course_detail', args=[self.course.id])
 
