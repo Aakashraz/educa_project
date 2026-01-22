@@ -22,6 +22,17 @@
             - HTML normally ignores line breaks in plain text
             - Without it, your multi-paragraph course overview would display as one giant blob of text
             - With it, instructors can write naturally and the text displays properly   -->
+            {% if request.user.is_authenticated %}
+                <form action="{% url 'student_enroll_course' %}" method="post">
+                    {{ enroll_form }}
+                    {% csrf_token %}
+                    <input type="submit" value="Enroll now">
+                </form>
+            {% else %}
+                <a href="{% url 'student_registration' %}" class="button">
+                    Register to enroll
+                </a>
+            {% endif %}
         </div>
     {% endwith %}
 {% endblock %}
