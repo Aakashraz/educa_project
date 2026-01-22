@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from .fields import OrderField
+from django.template.loader import render_to_string
 
 
 
@@ -91,10 +92,18 @@ class ItemBase(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        abstract = True
+        abstract = True     # I'm just a blueprint, don't make a database table for me.
 
     def __str__(self):
         return self.title
+
+    def render(self):
+        # render_to_string() = Converts template + data -> HTML string
+        return render_to_string(
+            # self._meta.model_name = 'text' or 'video' or 'image' or 'file'
+            f'courses/content/{self._metal.model_name}.html',
+            {'item': self}
+        )
 
 
 # Child Models
