@@ -3,3 +3,4 @@ Django~=5.2
 sqlparse==0.5.0
 Pillow~=11.2
 django-braces==1.15.0
+django-embed-video==1.4.9
