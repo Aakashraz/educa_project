@@ -253,8 +253,9 @@ class CourseDetailView(DetailView):
     model = Course
     template_name = 'courses/course/detail.html'
 
-    def context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Add the enrollment form to context
         context['enroll_form'] = CourseEnrollForm(
             initial={'course':self.object}  # Pre-fill the hidden course field with the current course.
         )
