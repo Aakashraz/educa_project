@@ -101,7 +101,7 @@ class ItemBase(models.Model):
         # render_to_string() = Converts template + data -> HTML string
         return render_to_string(
             # self._meta.model_name = 'text' or 'video' or 'image' or 'file'
-            f'courses/content/{self._metal.model_name}.html',
+            f'courses/content/{self._meta.model_name}.html',
             {'item': self}
         )
 

@@ -25,3 +25,16 @@ services:
     env_file:
       - .env  # Loads variables from .env files
     # Set environment variables inside the container
+
+    depends_on:
+      - memcached
+
+
+  # another service for cache
+  memcached:
+    image: memcached:1.6-alpine
+
+    container_name: educa_memcached
+
+    ports:
+      - "11211:11211"

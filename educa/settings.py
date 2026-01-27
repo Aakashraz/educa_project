@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'students.apps.StudentsConfig',
+    'embed_video',
 
 ]
 
@@ -133,4 +134,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # To redirect the student after a successful login if no next parameter is present in the request.
 from django.urls import reverse_lazy
 LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
+
+# Adding Memcached
+CACHES = {
+    'default': {
+        'BACKEND' : 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'LOCATION' : 'memcached:11211',
+    }
+}
 

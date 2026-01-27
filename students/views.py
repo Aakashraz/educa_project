@@ -50,8 +50,18 @@ class StudentEnrollCourseView(LoginRequiredMixin, FormView):
     course = None
     # Tells FormView which form class to use
     form_class = CourseEnrollForm
+    # Here, Django creates NEW form from POST data
+
+    # For Debugging Only!
+    # def post(self, request, *args, **kwargs):
+    #     print("=" * 50)
+    #     print("POST data:", request.POST)  # ← What data is arriving?
+    #     print("=" * 50)
+    #     return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        print("✅ FORM VALID !!!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print("Course:", form.cleaned_data['course'])
         # 1. Extract course from hidden form field
         self.course = form.cleaned_data['course']
         # 2. Add current user to course's students
@@ -61,6 +71,12 @@ class StudentEnrollCourseView(LoginRequiredMixin, FormView):
         #   Parent calls get_success_url() which needs self.course
         #   Must be called AFTER we set self.course!
         return super().form_valid(form)
+
+    # For Debugging Only!
+    def form_invalid(self, form):
+        print("❌ FORM INVALID")
+        print("Errors:", form.errors)
+        return super().form_invalid(form)  # ← This is where your error happens
 
     def get_success_url(self):
         # Called by super().form_valid()

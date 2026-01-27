@@ -13,6 +13,8 @@ from django.forms.models import modelform_factory
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.db.models import Count
 from students.forms import CourseEnrollForm
+from django.core.cache import cache
+
 
 
 class OwnerMixin:
@@ -137,7 +139,7 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
         self.model= self.get_model(model_name)
         if id:
             self.obj = get_object_or_404(
-                slef.model, id=id, owner=request.user
+                self.model, id=id, owner=request.user
             )
         return super().dispatch(request, module_id, model_name, id)
 
@@ -226,10 +228,32 @@ class CourseListView(TemplateResponseMixin, View):
     model = Course
     template_name = 'courses/course/list.html'
     def get(self, request, subject=None):
-        # ALWAYS get all subjects with counts (for sidebar)
-        subjects = Subject.objects.annotate(
-            total_courses=Count('courses')
-        )
+        # # ALWAYS get all subjects with counts (for sidebar)
+        # subjects = Subject.objects.annotate(
+        #     total_courses=Count('courses')
+        # )
+        # These above line is replaced by the caching 'all_subjects'.
+        subjects = cache.get('all_subjects')
+        if not subjects:
+            subjects = Subject.objects.annotate(
+                total_courses=Count('courses')
+            )
+            cache.set('all_subjects', subjects)
+            # Here, the cache.set() enforces the evaluation of the queryset before
+            # storing into the cache.
+            # WHY?
+            # - Memcached cannot store database connections
+            # - Lazy DB cursors cannot be serialized
+            # - Django ensures the queryset is fully materialized. So, internally it behaves like:
+            # subjects = list(subjects)     # evaluation happens
+            # cache.set('all_subjects', subjects)
+            # What is actually stored:
+            # - A list of Subject objects
+            # - Each object already has total_courses calculated
+        # One-sentence takeaway
+        # - Django finishes talking to the database, collects the data and only then gives
+        # Memcached something simple enough to store.
+
         # ALWAYS start with all courses
         courses = Course.objects.annotate(
             total_modules=Count('modules')
@@ -253,8 +277,9 @@ class CourseDetailView(DetailView):
     model = Course
     template_name = 'courses/course/detail.html'
 
-    def context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Add the enrollment form to context
         context['enroll_form'] = CourseEnrollForm(
             initial={'course':self.object}  # Pre-fill the hidden course field with the current course.
         )
