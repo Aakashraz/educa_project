@@ -1,3 +1,25 @@
 {#  This is the template to render videos. #}
 {% load embed_video_tags %}
 {% video item.url "small" %}
+
+
+{#{% load embed_video_tags %}#}
+{##}
+{#<!-- Debug: See what django-embed-video generates -->#}
+{#<div style="background: #f0f0f0; padding: 20px; margin: 10px;">#}
+{#    <h3>DEBUG INFO:</h3>#}
+{#    <p><strong>Original URL:</strong> {{ item.url }}</p>#}
+{##}
+{#    {% video item.url "small" as my_video %}#}
+{#        <p><strong>Backend:</strong> {{ my_video.backend }}</p>#}
+{#        <p><strong>Embed URL:</strong> {{ my_video.url }}</p>#}
+{#        <p><strong>Thumbnail:</strong> {{ my_video.thumbnail }}</p>#}
+{##}
+{#        <!-- The actual embed code -->#}
+{#        {{ my_video }}#}
+{#    {% endvideo %}#}
+{#</div>#}
+{##}
+{#<!-- Original code -->#}
+{#<h4>Original embed attempt:</h4>#}
+{#{% video item.url "small" %}#}
