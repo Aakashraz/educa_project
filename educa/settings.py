@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'students.apps.StudentsConfig',
     'embed_video',
+    'debug_toolbar',
 
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -143,3 +145,21 @@ CACHES = {
     }
 }
 
+
+# Configuration of Debug_toolbar with Docker
+INTERNAL_IPS = ['127.0.0.1', 'localhost']
+# Django Debug Toolbar only shows when your IP is in INTERNAL_IPS. In Docker, your browser's
+# request doesn't come from 127.0.0.1 -- it comes from Docker's internal network gateway IP
+
+import socket
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+# socket.gethostname() gets your containers' hostname
+# socket.gethostname_ex() returns a tuple: (hostname, aliases, ip_list)
+# the _ ignores aliases (we don't need them)
+# ips - contains your container's IPs, typically like ['172.18.0.2']
+INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
+# This converts container IPs to gateway IPs:
+# - Takes '172.18.0.2'-> removes last char([:-1])-> '172.18.0.'
+# - Adds "1" -> "172.18.0.1" (the Docker gateway IP)
+# - Add it to INTERNAL_IPS
