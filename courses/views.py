@@ -234,7 +234,7 @@ class CourseListView(TemplateResponseMixin, View):
         # )
         # These above line is replaced by the caching 'all_subjects'.
         subjects = cache.get('all_subjects')
-        if not subjects:
+        if subjects is None:
             subjects = Subject.objects.annotate(
                 total_courses=Count('courses')
             )
@@ -255,14 +255,23 @@ class CourseListView(TemplateResponseMixin, View):
         # Memcached something simple enough to store.
 
         # ALWAYS start with all courses
-        courses = Course.objects.annotate(
+        all_courses = Course.objects.annotate(
             total_modules=Count('modules')
         )
         # IF subject provided, filter down
         if subject:
             subject = get_object_or_404(Subject, slug=subject)
-            courses = courses.filter(subject=subject)   # <- Narrow down!
+            key = f'subject_{subject.id}_courses'
+            courses = cache.get(key)
+            if courses is None:
+                courses = all_courses.filter(subject=subject)
+                cache.set(key, courses)
         # ELSE courses stays as "all courses"
+        else:
+            courses = cache.get('all_courses')
+            if courses is None:
+                courses = all_courses
+                cache.set('all_courses', courses)
 
         return self.render_to_response(
             {
