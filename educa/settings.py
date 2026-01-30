@@ -48,12 +48,20 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',  # Used for per-site cache only
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',   # Used for per-site cache only
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Cache Middleware settings
+CACHE_MIDDLEWARE_ALIAS = 'default'  # Using 'default' cache for your cache middleware
+CACHE_MIDDLEWARE_SECONDS = 60 * 15  # Set global timeout to 15 minutes
+CACHE_MIDDLEWARE_KEY_PREFIX = 'educa'   # Specify a prfix for all cache keys to avoid collisions in case
+                                        # you use the same Memcached backend for multiple projects
 
 ROOT_URLCONF = 'educa.urls'
 
