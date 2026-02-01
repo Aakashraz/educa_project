@@ -146,10 +146,19 @@ from django.urls import reverse_lazy
 LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
 
 # Adding Memcached
+# CACHES = {
+#     'default': {
+#         'BACKEND' : 'django.core.cache.backends.memcached.PyMemcacheCache',
+#         'LOCATION' : 'memcached:11211',
+#     }
+# }
+
+# The Memcached is replaced by Redis.
 CACHES = {
     'default': {
-        'BACKEND' : 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION' : 'memcached:11211',
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://redis:6379/1'
+        # Connect to the Redis service on port 6379 and use the database no. 1 for caching.
     }
 }
 
