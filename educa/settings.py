@@ -40,18 +40,28 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'students.apps.StudentsConfig',
     'embed_video',
-
+    'debug_toolbar',
+    'redisboard',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',  # Used for per-site cache only
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',   # Used for per-site cache only
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Cache Middleware settings
+CACHE_MIDDLEWARE_ALIAS = 'default'  # Using 'default' cache for your cache middleware
+CACHE_MIDDLEWARE_SECONDS = 60 * 15  # Set global timeout to 15 minutes
+CACHE_MIDDLEWARE_KEY_PREFIX = 'educa'   # Specify a prfix for all cache keys to avoid collisions in case
+                                        # you use the same Memcached backend for multiple projects
 
 ROOT_URLCONF = 'educa.urls'
 
@@ -136,10 +146,37 @@ from django.urls import reverse_lazy
 LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
 
 # Adding Memcached
+# CACHES = {
+#     'default': {
+#         'BACKEND' : 'django.core.cache.backends.memcached.PyMemcacheCache',
+#         'LOCATION' : 'memcached:11211',
+#     }
+# }
+
+# The Memcached is replaced by Redis.
 CACHES = {
     'default': {
-        'BACKEND' : 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION' : 'memcached:11211',
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://redis:6379/1'
+        # Connect to the Redis service on port 6379 and use the database no. 1 for caching.
     }
 }
 
+
+# Configuration of Debug_toolbar with Docker
+INTERNAL_IPS = ['127.0.0.1', 'localhost']
+# Django Debug Toolbar only shows when your IP is in INTERNAL_IPS. In Docker, your browser's
+# request doesn't come from 127.0.0.1 -- it comes from Docker's internal network gateway IP
+
+import socket
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+# socket.gethostname() gets your containers' hostname
+# socket.gethostname_ex() returns a tuple: (hostname, aliases, ip_list)
+# the _ ignores aliases (we don't need them)
+# ips - contains your container's IPs, typically like ['172.18.0.2']
+INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
+# This converts container IPs to gateway IPs:
+# - Takes '172.18.0.2'-> removes last char([:-1])-> '172.18.0.'
+# - Adds "1" -> "172.18.0.1" (the Docker gateway IP)
+# - Add it to INTERNAL_IPS

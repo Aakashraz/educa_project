@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load cache %}
+
 {% block title %}
     {{ object.title }}
 {% endblock %}
@@ -28,12 +30,16 @@
         </ul>
     </div>
     <div class="module">
-        {% for content in module.contents.all %}
-            {% with item=content.item %}
-                <h2>{{ item.title }}</h2>
-                {{ item.render }}
-            {% endwith %}
-        {% endfor %}
+{# In template fragment caching, variables are only used to build the cache key;the cache stores rendered HTML, not PYTHON objects. #}
+        {% cache 600 module_contents module %}
+        {# module in is NOT cached as an object. It is only used to help build the cache key#}
+            {% for content in module.contents.all %}
+                {% with item=content.item %}
+                    <h2>{{ item.title }}</h2>
+                    {{ item.render }}
+                {% endwith %}
+            {% endfor %}
+        {% endcache %}
     </div>
 
 {% endblock %}
