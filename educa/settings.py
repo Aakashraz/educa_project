@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'embed_video',
     'debug_toolbar',
     'redisboard',
+    'rest_framework',
+
 ]
 
 MIDDLEWARE = [
@@ -62,6 +64,13 @@ CACHE_MIDDLEWARE_ALIAS = 'default'  # Using 'default' cache for your cache middl
 CACHE_MIDDLEWARE_SECONDS = 60 * 15  # Set global timeout to 15 minutes
 CACHE_MIDDLEWARE_KEY_PREFIX = 'educa'   # Specify a prfix for all cache keys to avoid collisions in case
                                         # you use the same Memcached backend for multiple projects
+
+# REST Framework configuration
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 ROOT_URLCONF = 'educa.urls'
 
