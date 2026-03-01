@@ -1,9 +1,16 @@
 from django.db.models import Count
 from rest_framework import generics
+from rest_framework import viewsets
 from courses.api.pagination import StandardPagination
-from .serializers import SubjectSerializer
-from courses.models import Subject
+from .serializers import SubjectSerializer, CourseSerializer
+from courses.models import Subject, Course
 
+
+
+class CourseViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Course.objects.prefetch_related('modules')
+    serializer_class = CourseSerializer
+    pagination_class = StandardPagination
 
 
 class SubjectListView(generics.ListAPIView):
