@@ -13,10 +13,16 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardPagination
 
 
-class SubjectListView(generics.ListAPIView):
-    queryset = Subject.objects.annotate(total_courses=Count('courses'))    # The base QuerySet to use to retrieve objects
-    serializer_class = SubjectSerializer    # The class to serializer objects
-    pagination_class = StandardPagination
+class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Subject.objects.annotate(total_courses=Count('courses'))     # The base QuerySet to fetch objects
+    serializer_class = SubjectSerializer    # Tells the ViewSet how to serializer the data before sending it as JSON.
+    pagination_class = StandardPagination   # Controls how many results per page are returned.
+
+
+# class SubjectListView(generics.ListAPIView):
+#     queryset = Subject.objects.annotate(total_courses=Count('courses'))    # The base QuerySet to use to retrieve objects
+#     serializer_class = SubjectSerializer    # The class to serializer objects
+#     pagination_class = StandardPagination
 #   This pagination line will result in different JSON structure returned by the view, as the following structure:
 # {
 #     "count": 4,
