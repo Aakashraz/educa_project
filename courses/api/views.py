@@ -1,6 +1,9 @@
 from django.db.models import Count
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from courses.api.pagination import StandardPagination
 from .serializers import SubjectSerializer, CourseSerializer
 from courses.models import Subject, Course
@@ -44,8 +47,18 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
 # - results: A list with the serialized 'objects' returned on this page.
 
 
-class SubjectDetailView(generics.RetrieveAPIView):
-    queryset = Subject.objects.annotate(total_courses=Count('courses'))
-    serializer_class = SubjectSerializer
+# class SubjectDetailView(generics.RetrieveAPIView):
+#     queryset = Subject.objects.annotate(total_courses=Count('courses'))
+#     serializer_class = SubjectSerializer
+
+
+# CUSTOM API VIEW FOR STUDENT ENROLLMENT IN THE COURSES
+class CourseEnrollView(APIView):
+    def post (self, request, pk, format=None):
+        course = get_object_or_404(Course, pk=pk)
+        course.students.add(request.user)
+        return Response({'enrolled':True})
+
+
 
 

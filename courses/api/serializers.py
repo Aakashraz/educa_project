@@ -11,6 +11,7 @@ class SubjectSerializer(serializers.ModelSerializer):
     # This method is called by using the name convention as: get_(field_name of SerializerMethodField())
     # And the field must be included inside the fields of Meta class.
     def get_popular_courses(self,obj):
+        # The 'obj' parameter is the model instance currently being serialized. In this case 'subject_instance'
         courses = obj.courses.annotate(
             total_students=Count('students')
         ).order_by('total_students')[:3]
