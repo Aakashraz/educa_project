@@ -1,6 +1,9 @@
 from django.db.models import Count
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from courses.api.pagination import StandardPagination
 from .serializers import SubjectSerializer, CourseSerializer
 from courses.models import Subject, Course
@@ -13,10 +16,16 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardPagination
 
 
-class SubjectListView(generics.ListAPIView):
-    queryset = Subject.objects.annotate(total_courses=Count('courses'))    # The base QuerySet to use to retrieve objects
-    serializer_class = SubjectSerializer    # The class to serializer objects
-    pagination_class = StandardPagination
+class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Subject.objects.annotate(total_courses=Count('courses'))     # The base QuerySet to fetch objects
+    serializer_class = SubjectSerializer    # Tells the ViewSet how to serializer the data before sending it as JSON.
+    pagination_class = StandardPagination   # Controls how many results per page are returned.
+
+
+# class SubjectListView(generics.ListAPIView):
+#     queryset = Subject.objects.annotate(total_courses=Count('courses'))    # The base QuerySet to use to retrieve objects
+#     serializer_class = SubjectSerializer    # The class to serializer objects
+#     pagination_class = StandardPagination
 #   This pagination line will result in different JSON structure returned by the view, as the following structure:
 # {
 #     "count": 4,
@@ -38,8 +47,18 @@ class SubjectListView(generics.ListAPIView):
 # - results: A list with the serialized 'objects' returned on this page.
 
 
-class SubjectDetailView(generics.RetrieveAPIView):
-    queryset = Subject.objects.annotate(total_courses=Count('courses'))
-    serializer_class = SubjectSerializer
+# class SubjectDetailView(generics.RetrieveAPIView):
+#     queryset = Subject.objects.annotate(total_courses=Count('courses'))
+#     serializer_class = SubjectSerializer
+
+
+# CUSTOM API VIEW FOR STUDENT ENROLLMENT IN THE COURSES
+class CourseEnrollView(APIView):
+    def post (self, request, pk, format=None):
+        course = get_object_or_404(Course, pk=pk)
+        course.students.add(request.user)
+        return Response({'enrolled':True})
+
+
 
 
