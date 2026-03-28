@@ -18,6 +18,16 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
     pagination_class = StandardPagination
 
+    @action(detail=True,
+            methods=['post'],
+            authentication_classes=[BasicAuthentication],
+            permission_classes=[IsAuthenticated]
+    )
+    def enroll(self, request, *args, **kwargs):
+        course = self.get_object()
+        course.students.add(request.user)
+        return Response({'enrolled':True})
+
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Subject.objects.annotate(total_courses=Count('courses'))     # The base QuerySet to fetch objects
@@ -56,13 +66,14 @@ class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 # CUSTOM API VIEW FOR STUDENT ENROLLMENT IN THE COURSES
-class CourseEnrollView(APIView):
-    authentication_classes = [BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    def post (self, request, pk, format=None):
-        course = get_object_or_404(Course, pk=pk)
-        course.students.add(request.user)
-        return Response({'enrolled':True})
+# class CourseEnrollView(APIView):
+#     authentication_classes = [BasicAuthentication]
+#     permission_classes = [IsAuthenticated]
+#     def post (self, request, pk, format=None):
+#         course = get_object_or_404(Course, pk=pk)
+#         course.students.add(request.user)
+#         return Response({'enrolled':True})
+# THIS CLASS IS REPLACED BY ADDING THE actions() decorator to the  enroll() method in CourseViewSet
 
 
 
