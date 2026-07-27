@@ -18,10 +18,11 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
     pagination_class = StandardPagination
 
-    @action(detail=True,
-            methods=['post'],
-            authentication_classes=[BasicAuthentication],
-            permission_classes=[IsAuthenticated]
+    @action(
+        detail=True,        # to specify that this is an action to be performed on a single object
+        methods=['post'],   # to specify only the post() method is allowed for this view
+        authentication_classes=[BasicAuthentication],
+        permission_classes=[IsAuthenticated]
     )
     def enroll(self, request, *args, **kwargs):
         course = self.get_object()
@@ -31,7 +32,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
 
 class SubjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Subject.objects.annotate(total_courses=Count('courses'))     # The base QuerySet to fetch objects
-    serializer_class = SubjectSerializer    # Tells the ViewSet how to serializer the data before sending it as JSON.
+    serializer_class = SubjectSerializer    # Tells the ViewSet how to serialize the data before sending it as JSON.
     pagination_class = StandardPagination   # Controls how many results per page are returned.
 
 
