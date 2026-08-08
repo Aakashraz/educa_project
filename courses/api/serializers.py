@@ -53,7 +53,25 @@ class ItemRelatedField(serializers.RelatedField):
 
 
 class ContentSerializer(serializers.ModelSerializer):
-    item = ItemRelatedField(read_only=True)
+    item = ItemRelatedField(read_only=True)     # read_only= True means the field is only used when
+    # serializing data (for o/p) and is ignored when deserializing (parsing i/p)
     class Meta:
         model = Content
         fields = ['order', 'item']
+
+
+
+class ModuleWithContentsSerializers(serializers.ModelSerializer):
+    contents = ContentSerializer(many=True)
+    class Meta:
+        model = Module
+        fields = ['order', 'title', 'description', 'contents']
+
+
+
+class CourseWithContentsSerializer(serializers.ModelSerializer):
+    modules = ModuleWithContentsSerializers(many=True)
+    class Meta:
+        model = Course
+        fields = ['id', 'subject', 'title', 'slug', 'overview', 'created', 'owner', 'modules']
+
