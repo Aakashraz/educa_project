@@ -46,3 +46,5 @@ htmlcov/
 # Migrations (optional - some people commit, some don't)
 # */migrations/*.py
 # !*/migrations/__init__.py
+
+generator

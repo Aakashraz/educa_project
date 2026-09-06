@@ -9,7 +9,7 @@ from courses.models import Course
 def course_chat_room(request, course_id):
     try:
         # retrieve course with given id joined by the current user
-        course = request.user.courses_joined.get(id=course_id)
+        course = request.user.course_joined.get(id=course_id)
     except Course.DoesNotExist:
         # user is not a student of the course or course does not exist
         return HttpResponseForbidden()

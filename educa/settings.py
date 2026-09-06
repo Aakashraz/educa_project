@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'courses.apps.CoursesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -190,3 +191,8 @@ INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
 # - Takes '172.18.0.2'-> removes last char([:-1])-> '172.18.0.'
 # - Adds "1" -> "172.18.0.1" (the Docker gateway IP)
 # - Add it to INTERNAL_IPS
+
+
+# ------------------------------
+# Set the ASGI_APPLICATION
+ASGI_APPLICATION = 'educa.asgi.application'
