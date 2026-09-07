@@ -14,7 +14,17 @@
 {% endblock %}
 
 {% block include_js %}
+    {{ course.id|json_script:"course-id" }}
+{#    this is rendered as-- <script type="application/json" id="course-id">42</script>#}
+<!--    The json_script template filter securely encodes Python objects as JSON and safely
+        embeds them in a <script> HTML tag, protecting against cross-site scripting (XSS)
+        attacks by escaping potentially harmful characters. -->
 {% endblock %}
 
 {% block domready %}
+    const courseId = JSON.parse(
+    document.getElementById('course-id').textContent
+    );
+    const url = 'ws://' + window.location.host + '/ws/chat/room/' + courseId + '/';
+    const chatSocket = new WebSocket(url);
 {% endblock %}
