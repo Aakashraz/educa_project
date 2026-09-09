@@ -14,7 +14,65 @@
 {% endblock %}
 
 {% block include_js %}
+    {{ course.id|json_script:"course-id" }}
+{#    this is rendered as-- <script type="application/json" id="course-id">42</script>#}
+<!--    The json_script template filter securely encodes Python objects as JSON and safely
+        embeds them in a <script> HTML tag, protecting against cross-site scripting (XSS)
+        attacks by escaping potentially harmful characters. -->
 {% endblock %}
 
 {% block domready %}
+    const courseId = JSON.parse(
+    document.getElementById('course-id').textContent
+    );
+    const url = 'ws://' + window.location.host + '/ws/chat/room/' + courseId + '/';
+    <!-- window.location.host returns the host name (domain name) and port number of the current page. -->
+    <!-- For example, the url will be ws://localhost:8000/ws/chat/room/42/ -->
+    const chatSocket = new WebSocket(url);
+
+    chatSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        {# When the server sends a message, it arrives as a raw JSON string in even.data. #}
+        {# JSON.parse unpacks it into a usable JS object -- like json.loads in Python #}
+        const chat = document.getElementById('chat');
+        {# Grabs the empty <div id="chat"> from your HTML -- this iw where message will appear  #}
+
+        chat.innerHTML += '<div class="message">' +
+                           data.message + '</div>';
+        {# Appends a new message div into the chat area += means add to existing content-- not replace it.   #}
+        chat.scrollTop = chat.scrollHeight;
+        <!-- Automatically scrolls the chat to the bottom after each new message -- like WhatsApp scrolling
+             down when you send a new message.   -->
+    };
+
+    chatSocket.onclose = function(event) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    const input = document.getElementById('chat-message-input');
+    const submitButton = document.getElementById('chat-message-submit');
+
+    submitButton.addEventListener('click', function(event) {
+        const message = input.value;
+        if (message) {
+            // Send message in JSON format
+            chatSocket.send(JSON.stringify({'message': message}));
+            // clear input field
+            input.value = '';
+            input.focus();  <!-- Puts the cursor back automatically in the input field after sending,
+            so the user can type the next message immediately without clicking the box again. -->
+        }
+    });
+
+    input.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            // cancel the default actio, if needed
+            event.preventDefault();
+            // Trigger click event on button
+            submitButton.click();
+        }
+    });
+
+    input.focus();
+
 {% endblock %}
