@@ -6,7 +6,9 @@ from . import consumers
 websocket_urlpatterns = [
     re_path(
         r'ws/chat/room/(?P<course_id>\d+)/$',
-        consumers.ChatConsumer.as_asgi()
+        consumers.ChatConsumer.as_asgi()    # as_asgi() ensures Channels creates a fresh instance per connection. As
+        # every user who connects needs their own separate instance of the consumer -- otherwise user A's message would
+        # leak into user B's connection.
     ),
 
 ]
