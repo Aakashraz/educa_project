@@ -26,8 +26,8 @@
     document.getElementById('course-id').textContent
     );
     const url = 'ws://' + window.location.host + '/ws/chat/room/' + courseId + '/';
-    <!-- window.location.host returns the host name (domain name) and port number of the current page. -->
-    <!-- For example, the url will be ws://localhost:8000/ws/chat/room/42/ -->
+    // window.location.host returns the host name (domain name) and port number of the current page.
+    // For example, the url will be ws://localhost:8000/ws/chat/room/42/
     const chatSocket = new WebSocket(url);
 
     chatSocket.onmessage = function(event) {
@@ -41,8 +41,8 @@
                            data.message + '</div>';
         {# Appends a new message div into the chat area += means add to existing content-- not replace it.   #}
         chat.scrollTop = chat.scrollHeight;
-        <!-- Automatically scrolls the chat to the bottom after each new message -- like WhatsApp scrolling
-             down when you send a new message.   -->
+        {#      Automatically scrolls the chat to the bottom after each new message -- like WhatsApp scrolling  #}
+        {#      down when you send a new message.  #}
     };
 
     chatSocket.onclose = function(event) {
@@ -55,12 +55,12 @@
     submitButton.addEventListener('click', function(event) {
         const message = input.value;
         if (message) {
-            // Send message in JSON format
+            // Send message in JSON string format to the server --(Consumer)
             chatSocket.send(JSON.stringify({'message': message}));
             // clear input field
             input.value = '';
-            input.focus();  <!-- Puts the cursor back automatically in the input field after sending,
-            so the user can type the next message immediately without clicking the box again. -->
+            input.focus();  /* Puts the cursor back automatically in the input field after sending,
+            so the user can type the next message immediately without clicking the box again. */
         }
     });
 

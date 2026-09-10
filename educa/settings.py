@@ -196,3 +196,13 @@ INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
 # ------------------------------
 # Set the ASGI_APPLICATION
 ASGI_APPLICATION = 'educa.asgi.application'
+
+# Redis Channel Layer setting
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [("redis", 6379)],
+        },
+    },
+}
