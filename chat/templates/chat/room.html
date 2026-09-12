@@ -20,7 +20,7 @@
         embeds them in a <script> HTML tag, protecting against cross-site scripting (XSS)
         attacks by escaping potentially harmful characters. -->
     {{ request.user.username|json_script:"request-user" }}
-{#  this is rendered as -- <script type="application/json" id=request-user>alice</script>  #}
+{#  this is rendered as -- <script type="application/json" id="request-user">"alice"</script>  #}
 {% endblock %}
 
 {% block domready %}
@@ -41,7 +41,7 @@
         {# JSON.parse unpacks it into a usable JS object -- like json.loads in Python #}
         const chat = document.getElementById('chat');
         {# Grabs the empty <div id="chat"> from your HTML -- this iw where message will appear  #}
-        const dateOptions = {hour: 'numeric', minute: 'numeric': hour12: true};
+        const dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
         const datetime = new Date(data.datetime).toLocaleString('en-US', dateOptions);
         const isMe = data.user === requestUser;
         const source = isMe ? 'me' : 'other';
