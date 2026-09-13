@@ -35,7 +35,7 @@ class Course(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     students = models.ManyToManyField(
         User,
-        related_name='course_joined',
+        related_name='courses_joined',
         blank=True
     )
 
