@@ -17,7 +17,7 @@ def course_chat_room(request, course_id):
     # retrieve chat history
     latest_messages = course.chat_messages.select_related(
         'user'
-    ).order_by('-id')[:5]
+    ).order_by('-id')[:10]
     latest_messages = reversed(latest_messages)
 
     return render(

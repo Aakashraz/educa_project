@@ -4,7 +4,7 @@
 
 {% block content %}
     <div id="chat">
-        {%  for messages in latest_messages %}
+        {%  for message in latest_messages %}
             <div class="message {% if message.user == request.user %}me{% else %}
 other{% endif %}">
                 <strong>{{ message.user.username }}</strong>
