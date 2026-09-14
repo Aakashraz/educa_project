@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'redisboard',
     'rest_framework',
     'chat.apps.ChatConfig',
+    'django_nh3',
 
 ]
 

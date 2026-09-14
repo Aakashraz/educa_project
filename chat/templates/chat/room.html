@@ -7,7 +7,14 @@
         {%  for message in latest_messages %}
             <div class="message {% if message.user == request.user %}me{% else %}
 other{% endif %}">
-                <strong>{{ message.user.username }}</strong>
+                <strong>
+                    {# Check if the message belongs to the current user#}
+                    {% if message.user == request.user %}
+                        Me
+                    {% else %}
+                        {{ message.user.username }}
+                    {% endif %}
+                </strong>
                 <span class="date">
                     {{ message.sent_on|date:"Y.m.d H:i A" }}
                 </span>
@@ -44,6 +51,7 @@ other{% endif %}">
     const url = 'ws://' + window.location.host + '/ws/chat/room/' + courseId + '/';
     // window.location.host returns the host name (domain name) and port number of the current page.
     // For example, the url will be ws://localhost:8000/ws/chat/room/42/
+
     const chatSocket = new WebSocket(url);
 
     chatSocket.onmessage = function(event) {

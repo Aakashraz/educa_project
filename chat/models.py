@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django_nh3.models import Nh3Field
 
 
 
@@ -15,7 +16,7 @@ class Message(models.Model):
         on_delete=models.PROTECT,   # By using PROTECT parameter, a Course object cannot be deleted if related messages exist.
         related_name='chat_messages'
     )
-    content = models.TextField()
+    content = Nh3Field()    # Replacing TextField with Nh3Field
     sent_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -1,4 +1,5 @@
 import json
+import nh3
 # from asgiref.sync import async_to_sync
 # from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -36,6 +37,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        # sanitize with nh3 before broadcasting
+        message = nh3.clean(message)
         now = timezone.now()
         # send message to WebSocket
         await self.channel_layer.group_send(
