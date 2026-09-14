@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'redisboard',
     'rest_framework',
     'chat.apps.ChatConfig',
+    'django_nh3',
 
 ]
 
@@ -130,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kathmandu'
 
 USE_I18N = True
 
