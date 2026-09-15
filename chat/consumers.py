@@ -36,9 +36,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # receive message from WebSocket -- i.e., from the browser (client)
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        uncleaned_message = text_data_json['message']
         # sanitize with nh3 before broadcasting
-        message = nh3.clean(message)
+        message = nh3.clean(uncleaned_message, tags=set())
+        # ----------
+        print(f"DEBUG cleaned message: {repr(message)}")
         now = timezone.now()
         # send message to WebSocket
         await self.channel_layer.group_send(

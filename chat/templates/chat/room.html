@@ -66,11 +66,23 @@ other{% endif %}">
         const source = isMe ? 'me' : 'other';
         const name = isMe ? 'Me' : data.user;
 
-        chat.innerHTML += '<div class="message ' + source + ' ">' +
-                          '<strong>' + name + '</strong>' +
-                          '<span class="date">' + datetime + '</span><br>' +
-                           data.message + '</div>';
-        {# Appends a new message div into the chat area += means add to existing content-- not replace it.   #}
+{#        chat.innerHTML += '<div class="message ' + source + ' ">' +#}
+{#                          '<strong>' + name + '</strong>' +#}
+{#                          '<span class="date">' + datetime + '</span><br>' +#}
+{#                           data.message + '</div>';#}
+    {# Appends a new message div into the chat area += means add to existing content-- not replace it.   #}
+
+{#    ---   The innerHTML DOM property is replaced by following code ----  #}
+        // Create element safely
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message ' + source;
+        messageDiv.innerHTML = '<strong>' + name + '</strong>' +
+                                '<span class="date">' + datetime + '</span><br>';
+        // Append message as plain Text, not HTML
+        const messageText = document.createTextNode(data.message);
+        messageDiv.appendChild(messageText);
+
+        chat.appendChild(messageDiv);
         chat.scrollTop = chat.scrollHeight;
         {#      Automatically scrolls the chat to the bottom after each new message -- like WhatsApp scrolling  #}
         {#      down when you send a new message.  #}
