@@ -13,7 +13,7 @@ services:
 
     volumes:
       - .:/app
-    # Mount current directory -> /app in container
+    # Mount the current directory-> /app in container
     # Changes on your computer instantly appear in container!
     # Format: local_path:container_path
 
@@ -29,6 +29,9 @@ services:
     depends_on:
 #      - memcached
       - redis
+
+    environment:
+      - DJANGO_SETTINGS_MODULE=educa.settings.local
 
   redis:
     image: redis:7-alpine
