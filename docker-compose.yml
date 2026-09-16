@@ -3,7 +3,7 @@ name: educa_project
 services:
   backend:
     build: .
-    # Build image from Dockerfile in current directory (.)
+    # Build image from Dockerfile in the current directory (.)
 
     command: >
       sh -c "python manage.py migrate &&
