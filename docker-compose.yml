@@ -10,6 +10,10 @@ services:
              python manage.py runserver 0.0.0.0:8000"
       # Override CMD from Dockerfile
       # sh -c allows running multiple commands as string
+      
+    restart: always
+    # This defines the restart policy for the container. Using always, the container
+    # is always restarted if it stops. This is useful for production environments.
 
     volumes:
       - .:/app
@@ -31,7 +35,7 @@ services:
       - redis
 
     environment:
-      - DJANGO_SETTINGS_MODULE=educa.settings.local
+      - DJANGO_SETTINGS_MODULE=educa.settings.prod
 
   redis:
     image: redis:7-alpine
