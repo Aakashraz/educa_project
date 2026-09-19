@@ -1,14 +1,28 @@
 name: educa_project
 
 services:
+
+  db:
+    image: postgres:17
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+
   backend:
     build: .
     # Build image from Dockerfile in the current directory (.)
 
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+    command: ["./wait-for-it.sh", "db:5432", "--",
+              "sh", "-c", "python manage.py migrate && 
+                            python manage.py runserver 0.0.0.0:8000"]
       # Override CMD from Dockerfile
+      # the script ./wait-for-it.sh waits for db to be ready, separated by -- once ready, run the remaining script.
+      # It polls db:5432 until it accepts connections, then runs everything after --.
       # sh -c allows running multiple commands as string
       
     restart: always
@@ -32,13 +46,18 @@ services:
 
     depends_on:
 #      - memcached
+      - db
       - redis
 
     environment:
       - DJANGO_SETTINGS_MODULE=educa.settings.prod
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   redis:
     image: redis:7-alpine
+    restart: always
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
@@ -57,4 +76,5 @@ services:
 
 
 volumes:
+  postgres_data:
   redis_data:

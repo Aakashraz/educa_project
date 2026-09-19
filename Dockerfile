@@ -27,6 +27,7 @@ COPY requirements.txt /app/
 RUN apt-get update && apt-get install -y \
     gcc \
     python3-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 # You need a C compiler to buld uWSGI
 
@@ -40,7 +41,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app/
 # Copies everything from current folder -> /app in container
 # The '.' means "current directory on your computer"
-
+RUN chmod +x /app/wait-for-it.sh
+# Run the wait-for-it script in execute mode (Linux command)
 
 # Create directories
 RUN mkdir -p /app/staticfiles /app/media
