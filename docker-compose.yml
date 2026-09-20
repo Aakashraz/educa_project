@@ -30,6 +30,8 @@ services:
     volumes:
       - .:/app
     # Mount the current directory-> /app in container
+    # Analogy: Two windows looking into the same room -- it doesn't matter which window
+    # you reach through, you're touching the same objects inside that room.
     # Changes on your computer instantly appear in container!
     # Format: local_path:container_path
 
