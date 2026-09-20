@@ -7,6 +7,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Why? -> Docker layers work better without these changing files
 
 ENV PYTHONUNBUFFERED=1
+# This ensures that the Python stdout and stderr streams are sent
+# straight to the terminal without first being buffered.
 # Makes Python output appear immediaterly in logs
 # Without this, print() statements might be delayed
 
@@ -22,6 +24,12 @@ COPY requirements.txt /app/
 # Why separate? -> Docker caching! -- If requirements don't change,
 # this layer is reused (faster builds)
 
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+# You need a C compiler to buld uWSGI
 
 # Install Python packages
 RUN pip install --upgrade pip && pip install -r requirements.txt
@@ -33,7 +41,8 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app/
 # Copies everything from current folder -> /app in container
 # The '.' means "current directory on your computer"
-
+RUN chmod +x /app/wait-for-it.sh
+# Run the wait-for-it script in execute mode (Linux command)
 
 # Create directories
 RUN mkdir -p /app/staticfiles /app/media
