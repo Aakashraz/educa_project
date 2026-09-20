@@ -18,13 +18,11 @@ services:
     # Build image from Dockerfile in the current directory (.)
 
     command: ["./wait-for-it.sh", "db:5432", "--",
-              "sh", "-c", "python manage.py migrate && 
-                            python manage.py runserver 0.0.0.0:8000"]
+              "uwsgi", "--ini", "/app/config/uwsgi/uwsgi.ini"]
       # Override CMD from Dockerfile
       # the script ./wait-for-it.sh waits for db to be ready, separated by -- once ready, run the remaining script.
       # It polls db:5432 until it accepts connections, then runs everything after --.
-      # sh -c allows running multiple commands as string
-      
+
     restart: always
     # This defines the restart policy for the container. Using always, the container
     # is always restarted if it stops. This is useful for production environments.
@@ -35,8 +33,9 @@ services:
     # Changes on your computer instantly appear in container!
     # Format: local_path:container_path
 
-    ports:
-      - "8000:8000"
+# Not required as uWSGI will be reachable with a socket, so don't need to expose port in the container.
+#    ports:
+#      - "8000:8000"
     # Map ports: your_computer:container
     # localhost:8000 on your PC -> port 8000 in container
 
@@ -55,6 +54,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+
   redis:
     image: redis:7-alpine
     restart: always
@@ -63,6 +63,16 @@ services:
       - redis_data:/data
     ports:
       - "6379:6379"
+
+
+  nginx:
+    image: nginx:1.30.5
+    restart: always
+    volumes:
+      - ./config/nginx:/etc/nginx/templates
+      - .:/app
+    ports:
+      - "80:80"
 
 
   # another service for cache
