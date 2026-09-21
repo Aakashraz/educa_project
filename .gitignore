@@ -49,3 +49,4 @@ htmlcov/
 
 generator
 *.sock
+ssl/
