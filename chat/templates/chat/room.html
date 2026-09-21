@@ -48,7 +48,7 @@ other{% endif %}">
     const requestUser = JSON.parse(
         document.getElementById('request-user').textContent
     );
-    const url = 'ws://' + window.location.host + '/ws/chat/room/' + courseId + '/';
+    const url = 'wss://' + window.location.host + '/ws/chat/room/' + courseId + '/';
     // window.location.host returns the host name (domain name) and port number of the current page.
     // For example, the url will be ws://localhost:8000/ws/chat/room/42/
 
