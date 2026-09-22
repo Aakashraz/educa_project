@@ -8,7 +8,11 @@ ADMINS = [
     ('jonadmin don', 'prodenv001@gmail.com')
 ]
 
-ALLOWED_HOSTS = ['educaproject.com', 'www.educaproject.com']
+ALLOWED_HOSTS = ['.educaproject.com']
+# A value that begins with a period is used as a subdomain wildcard; '.educaproject.com' will
+# match any subdomain of educaproject.com and any subdomain for this domain, for example,
+# -> course.educaproject.com and django.educaproject.com.
+
 
 DATABASES = {
     'default': {
