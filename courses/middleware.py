@@ -16,11 +16,11 @@ def subdomain_course_middleware(get_response):
             course = get_object_or_404(Course, slug=host_parts[0])
 
             # for example -> "/courses/django/"
-            course_url = reverse('course_detail', arg=[course.slug])
+            course_url = reverse('course_detail', args=[course.slug])
             # redirect the current request to the course_detail view
             url = '{}://{}{}'.format(
                 request.scheme,                 # "https"
-                '.', join(host_parts[1:]),      # "educaproject.com"
+                '.'.join(host_parts[1:]),      # "educaproject.com"
                 course_url                      # "/courses/django/"
             )
             # -> "https://educaproject.com/courses/django/"

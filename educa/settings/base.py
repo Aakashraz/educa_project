@@ -205,3 +205,6 @@ CHANNEL_LAYERS = {
 
 # For stripping tags by NH3 cleaner
 NH3_ALLOWED_TAGS = set()
+
+# FOR EMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
