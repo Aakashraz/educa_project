@@ -58,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'courses.middleware.subdomain_course_middleware',
+
 ]
 
 # Cache Middleware settings
@@ -203,3 +205,6 @@ CHANNEL_LAYERS = {
 
 # For stripping tags by NH3 cleaner
 NH3_ALLOWED_TAGS = set()
+
+# FOR EMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
